@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 style="text-align:center; margin-top:6px; letter-spacing:.8px;">TEMPO</h2>
+
+<div class="tiles-8" style="margin-top:12px">
+  <a class="tile big" href="#" style="text-decoration:none; color:inherit"><span class="icon">🌤️</span><div class="title">Clima</div></a>
+  <a class="tile big" href="#" style="text-decoration:none; color:inherit"><span class="icon">📅</span><div class="title">Calendário</div></a>
+  <a class="tile big" href="#" style="text-decoration:none; color:inherit"><span class="icon">🌙</span><div class="title">Partes do dia</div></a>
+  <a class="tile big" href="{{ url_for('criancas_view') }}" style="text-decoration:none; color:inherit"><span class="icon">🍼</span><div class="title">Cadastrar criança</div></a>
+  <a class="tile big" href="#" style="text-decoration:none; color:inherit"><span class="icon">⏳</span><div class="title">Atividades temporais</div></a>
+  <a class="tile big" href="{{ url_for('categorias') }}" style="text-decoration:none; color:inherit"><span class="icon">➕</span><div class="title">Criar cards</div></a>
+</div>
+
+<div class="actions-bar">
+  <a href="{{ url_for('dashboard') }}" class="btn-round btn-yellow">Voltar ao menu</a>
+  <a href="{{ url_for('categorias') }}" class="btn-round btn-blue">Criar novo card</a>
+</div>
+
+<a class="tile big" href="{{ url_for('cards_home') }}" style="text-decoration:none; color:inherit">
+  <span class="icon">➕</span><div class="title">Criar cards</div>
+</a>
+
+{% endblock %}

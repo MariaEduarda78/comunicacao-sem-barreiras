@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; margin-bottom:24px;">CATEGORIAS</h2>
+
+<!-- FORMULÁRIO DE NOVA CATEGORIA -->
+<div style="max-width:600px; margin:0 auto; background:#fff; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <h4 style="text-align:center; margin-bottom:16px;">Adicionar nova categoria</h4>
+
+  <form method="post" class="form">
+    <label>Nome da categoria</label>
+    <input class="input" type="text" name="nome" placeholder="Ex: Emoções, Rotina, Escola..." required>
+
+    <label>Cor (opcional)</label>
+    <input class="input" type="color" name="cor" value="#7c3aed">
+
+    <div class="actions" style="display:flex; justify-content:space-between; margin-top:12px;">
+      <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Voltar</a>
+      <button class="btn btn-primary" type="submit">Salvar Categoria</button>
+    </div>
+  </form>
+</div>
+
+<!-- LISTA DE CATEGORIAS EXISTENTES -->
+{% if lista %}
+  <h3 style="margin-top:40px; text-align:center;">Categorias criadas</h3>
+
+  <div class="grid" style="margin-top:20px;">
+    {% for cat in lista %}
+      <div class="tile" style="background-color: {{ cat.cor or '#e5f3ff' }};">
+        <div class="title">{{ cat.nome }}</div>
+        <div class="hint">Ordem: {{ cat.ordem }}</div>
+
+        <!-- AÇÕES RÁPIDAS -->
+        <div style="display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap;">
+          <!-- ABRIR CARDS -->
+          <a class="btn btn-primary" href="{{ url_for('cards_categoria', cat_id=cat.id) }}">Abrir</a>
+
+          <!-- EDITAR -->
+          <form method="post" action="{{ url_for('categorias_update', cat_id=cat.id) }}" style="display:flex; gap:6px; align-items:center;">
+            <input type="text" name="nome" value="{{ cat.nome }}" style="max-width:160px; padding:6px 8px;">
+            <input type="color" name="cor" value="{{ cat.cor or '#cfe7ff' }}">
+            <button class="btn btn-primary" type="submit" style="padding:6px 10px;">Salvar</button>
+          </form>
+
+          <!-- EXCLUIR -->
+          <form method="post" action="{{ url_for('categorias_delete', cat_id=cat.id) }}">
+            <button class="btn btn-ghost" type="submit">Excluir</button>
+          </form>
+
+          <!-- SUBIR / DESCER -->
+          <form method="post" action="{{ url_for('categorias_up', cat_id=cat.id) }}">
+            <button class="btn btn-ghost" type="submit">⬆️</button>
+          </form>
+          <form method="post" action="{{ url_for('categorias_down', cat_id=cat.id) }}">
+            <button class="btn btn-ghost" type="submit">⬇️</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p style="text-align:center; margin-top:20px;">Nenhuma categoria cadastrada ainda.</p>
+{% endif %}
+
+{% endblock %}

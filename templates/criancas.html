@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="shell-card">
+  <div class="section-header">
+    <h2>Cadastro da Criança</h2>
+  </div>
+
+  <div class="shell-body">
+    <form method="post" class="form-grid">
+      <div>
+        <div class="label">Nome completo</div>
+        <input class="input" type="text" name="nome" placeholder="Ex.: Ana Maria" required>
+      </div>
+
+      <div>
+        <div class="label">Data de nascimento</div>
+        <input class="input" type="date" name="idade">
+      </div>
+
+      <div>
+        <div class="label">Gênero</div>
+        <select class="input" name="genero">
+          <option value="">Selecione</option>
+          <option>Masculino</option>
+          <option>Feminino</option>
+          <option>Outro</option>
+          <option>Prefiro não informar</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <div class="label">Observações</div>
+        <textarea class="input" name="observacao" rows="3" placeholder="Informações importantes..."></textarea>
+      </div>
+
+      <div class="full" style="display:flex; gap:12px; justify-content:center; margin-top:6px">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Cancelar</a>
+        <button class="btn btn-primary" type="submit">Cadastrar Criança</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if lista %}
+  <h3 style="text-align:center; margin:14px 0 8px;">Crianças cadastradas</h3>
+  <div class="grid" style="width:min(980px,96vw); margin:0 auto 24px;">
+    {% for c in lista %}
+      <div class="tile mint">
+        <div class="emoji">👶</div>
+        <div class="title">{{ c.nome }}</div>
+        <div class="hint">{{ c.idade or 'sem data' }} · {{ c.genero or '—' }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}

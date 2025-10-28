@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; margin: 10px 0 22px;">CARDS</h2>
+
+<div class="grid">
+
+  {% for cat in categorias %}
+    <a href="{{ url_for('cards_categoria', cat_id=cat.id) }}" class="tile mint" style="text-decoration:none; color:inherit; background: rgba(255,255,255,.35); border: 1px solid rgba(0,0,0,.06);">
+      <div class="emoji">{{ emoji_by_nome.get(cat.nome, "🧩") }}</div>
+      <div class="title">{{ cat.nome }}</div>
+    </a>
+  {% endfor %}
+
+  <!-- Tile "Mais opções" = atalho para gerenciar/criar categorias/cards -->
+  <a href="{{ url_for('categorias') }}" class="tile mint" style="text-decoration:none; color:inherit; background: rgba(255,255,255,.35); border: 1px solid rgba(0,0,0,.06);">
+    <div class="emoji">➕</div>
+    <div class="title">Mais opções</div>
+  </a>
+
+</div>
+
+<div style="display:flex; gap:12px; justify-content:center; margin-top:26px;">
+  <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Voltar ao menu</a>
+  <a class="btn btn-primary" href="{{ url_for('categorias') }}">Criar novo card</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Comunicador — {{ crianca.nome }}</h1>
+<form method="get" class="row">
+<label>Categoria:
+<select name="categoria" onchange="this.form.submit()">
+<option value="">Todas</option>
+{% for cat in categorias %}
+<option value="{{ cat.id }}" {% if cat_id and cat.id==cat_id|int %}selected{% endif %}>{{ cat.nome }}</option>
+{% endfor %}
+</select>
+</label>
+</form>
+
+
+<div class="frase" id="frase"></div>
+<div class="acoes">
+<button class="btn" onclick="falarFrase()">Falar</button>
+<button class="btn ghost" onclick="limparFrase()">Limpar</button>
+</div>
+
+
+<div class="grid-cards">
+{% for card in cards %}
+<button class="tile" style="background: {{ card.cor }}" onclick="adicionarPalavra('{{ card.fala_sugerida or card.rotulo }}')">
+<span class="label">{{ card.rotulo }}</span>
+</button>
+{% endfor %}
+</div>
+
+
+<script src="{{ url_for('static', filename='js/comunicador.js') }}"></script>
+{% endblock %}

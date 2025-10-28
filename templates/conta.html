@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="profile" style="margin: 10px 0 24px 0;">
+  <div class="avatar"></div>
+  <div class="name">CONFIGURAÇÕES DA CONTA</div>
+  <div class="handle">editar informações pessoais</div>
+</div>
+
+<div style="max-width:500px; margin:0 auto; background:#fff; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <form method="post">
+    <label>Nome completo</label>
+    <input class="input" type="text" name="nome" value="{{ user.nome }}" required>
+
+    <label>E-mail</label>
+    <input class="input" type="email" name="email" value="{{ user.email }}" required>
+
+    <div class="actions" style="display:flex; justify-content:space-between; margin-top:16px;">
+      <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Voltar</a>
+      <button class="btn btn-primary" type="submit">Salvar alterações</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

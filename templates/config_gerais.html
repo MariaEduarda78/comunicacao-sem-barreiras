@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="profile" style="margin: 10px 0 24px 0;">
+  <div class="avatar"></div>
+  <div class="name">CONFIGURAÇÕES GERAIS</div>
+  <div class="handle">preferências do aplicativo e de voz</div>
+</div>
+
+<div style="max-width:820px; margin:0 auto; display:grid; gap:16px; grid-template-columns: 1fr;">
+
+  <!-- Preferências gerais (tema, tamanho dos cards) -->
+  <section style="background:#fff; border-radius:16px; padding:18px; box-shadow:0 2px 6px rgba(0,0,0,.08);">
+    <h3 style="margin:0 0 12px 0;">Preferências de Interface</h3>
+
+    <div class="form" style="margin:0;">
+      <label for="prefTema">Tema</label>
+      <select id="prefTema" class="input">
+        <option value="auto">Automático</option>
+        <option value="claro">Claro</option>
+        <option value="escuro">Escuro</option>
+      </select>
+
+      <label for="prefCardSize" style="margin-top:8px;">Tamanho dos Cards</label>
+      <select id="prefCardSize" class="input">
+        <option value="p">Pequeno</option>
+        <option value="m">Médio</option>
+        <option value="g">Grande</option>
+      </select>
+
+      <div class="actions" style="justify-content:flex-end; margin-top:12px;">
+        <button id="btnSalvarUI" class="btn btn-primary" type="button">Salvar preferências</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configurações de Voz (Web Speech API) -->
+  <section style="background:#fff; border-radius:16px; padding:18px; box-shadow:0 2px 6px rgba(0,0,0,.08);">
+    <h3 style="margin:0 0 12px 0;">Voz e Fala (TTS)</h3>
+
+    <div class="form" style="margin:0;">
+      <label for="ttsVoice">Voz</label>
+      <select id="ttsVoice" class="input"></select>
+
+      <label for="ttsRate" style="margin-top:8px;">Velocidade (<span id="rateValue">1.0</span>)</label>
+      <input id="ttsRate" class="input" type="range" min="0.5" max="1.8" step="0.1" value="1.0">
+
+      <label for="ttsPitch" style="margin-top:8px;">Altura/Pitch (<span id="pitchValue">1.0</span>)</label>
+      <input id="ttsPitch" class="input" type="range" min="0.5" max="2" step="0.1" value="1.0">
+
+      <label for="ttsVolume" style="margin-top:8px;">Volume (<span id="volValue">1.0</span>)</label>
+      <input id="ttsVolume" class="input" type="range" min="0" max="1" step="0.05" value="1">
+
+      <label for="ttsTexto" style="margin-top:8px;">Texto de teste</label>
+      <input id="ttsTexto" class="input" type="text" placeholder="Digite algo para ouvir..." value="Olá, eu sou sua voz de teste!">
+
+      <div class="actions" style="justify-content:space-between; margin-top:12px;">
+        <button id="btnTestar" class="btn btn-ghost" type="button">▶️ Testar voz</button>
+        <button id="btnSalvarTTS" class="btn btn-primary" type="button">Salvar configurações de voz</button>
+      </div>
+    </div>
+
+    <p style="margin:10px 0 0 0; font-size:.9rem; color:#2b2b2b">
+      Dica: os navegadores listam vozes diferentes dependendo do sistema. Caso a lista apareça vazia, recarregue a página.
+    </p>
+  </section>
+
+  <div class="actions" style="justify-content:flex-end;">
+    <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Voltar ao menu</a>
+  </div>
+</div>
+
+<script>
+  // ===== Helpers de LocalStorage =====
+  const LS_KEYS = {
+    tema: "csb_pref_tema",
+    cardSize: "csb_pref_card_size",
+    ttsVoice: "csb_tts_voice",
+    ttsRate: "csb_tts_rate",
+    ttsPitch: "csb_tts_pitch",
+    ttsVolume: "csb_tts_volume",
+  };
+
+  function saveLS(key, value) { localStorage.setItem(key, value); }
+  function getLS(key, fallback=null) {
+    const v = localStorage.getItem(key);
+    return v === null ? fallback : v;
+  }
+
+  // ===== Preferências UI =====
+  const prefTema = document.getElementById("prefTema");
+  const prefCardSize = document.getElementById("prefCardSize");
+  const btnSalvarUI = document.getElementById("btnSalvarUI");
+
+  // carrega valores salvos
+  prefTema.value = getLS(LS_KEYS.tema, "auto");
+  prefCardSize.value = getLS(LS_KEYS.cardSize, "m");
+
+  btnSalvarUI.addEventListener("click", () => {
+    saveLS(LS_KEYS.tema, prefTema.value);
+    saveLS(LS_KEYS.cardSize, prefCardSize.value);
+    alert("Preferências salvas!");
+  });
+
+  // ===== TTS (Web Speech API) =====
+  const ttsVoice = document.getElementById("ttsVoice");
+  const ttsRate = document.getElementById("ttsRate");
+  const ttsPitch = document.getElementById("ttsPitch");
+  const ttsVolume = document.getElementById("ttsVolume");
+  const rateValue = document.getElementById("rateValue");
+  const pitchValue = document.getElementById("pitchValue");
+  const volValue = document.getElementById("volValue");
+  const btnTestar = document.getElementById("btnTestar");
+  const btnSalvarTTS = document.getElementById("btnSalvarTTS");
+  const ttsTexto = document.getElementById("ttsTexto");
+
+  // atualiza labels
+  function syncLabels() {
+    rateValue.textContent = Number(ttsRate.value).toFixed(1);
+    pitchValue.textContent = Number(ttsPitch.value).toFixed(1);
+    volValue.textContent = Number(ttsVolume.value).toFixed(2);
+  }
+  [ttsRate, ttsPitch, ttsVolume].forEach(el => el.addEventListener("input", syncLabels));
+  syncLabels();
+
+  // popula vozes
+  let availableVoices = [];
+  function loadVoices() {
+    availableVoices = window.speechSynthesis.getVoices() || [];
+    ttsVoice.innerHTML = "";
+    availableVoices
+      .sort((a, b) => (a.lang + a.name).localeCompare(b.lang + b.name))
+      .forEach((v, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `${v.name} — ${v.lang}`;
+        ttsVoice.appendChild(opt);
+      });
+
+    // seleção padrão/salva
+    const savedIndex = parseInt(getLS(LS_KEYS.ttsVoice, "-1"), 10);
+    if (!Number.isNaN(savedIndex) && savedIndex >= 0 && savedIndex < availableVoices.length) {
+      ttsVoice.value = savedIndex;
+    }
+  }
+  // Alguns navegadores disparam o evento async
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+  // tenta carregar já no ready
+  loadVoices();
+
+  // carrega sliders salvos
+  ttsRate.value   = getLS(LS_KEYS.ttsRate, "1.0");
+  ttsPitch.value  = getLS(LS_KEYS.ttsPitch, "1.0");
+  ttsVolume.value = getLS(LS_KEYS.ttsVolume, "1.0");
+  syncLabels();
+
+  function speak(text) {
+    if (!("speechSynthesis" in window)) {
+      alert("Seu navegador não suporta síntese de voz.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text || "Teste de voz.");
+    const idx = parseInt(ttsVoice.value, 10);
+    if (!Number.isNaN(idx) && availableVoices[idx]) {
+      u.voice = availableVoices[idx];
+    }
+    u.rate = parseFloat(ttsRate.value || "1");
+    u.pitch = parseFloat(ttsPitch.value || "1");
+    u.volume = parseFloat(ttsVolume.value || "1");
+    window.speechSynthesis.speak(u);
+  }
+
+  btnTestar.addEventListener("click", () => speak(ttsTexto.value));
+
+  btnSalvarTTS.addEventListener("click", () => {
+    saveLS(LS_KEYS.ttsVoice, ttsVoice.value);
+    saveLS(LS_KEYS.ttsRate, ttsRate.value);
+    saveLS(LS_KEYS.ttsPitch, ttsPitch.value);
+    saveLS(LS_KEYS.ttsVolume, ttsVolume.value);
+    alert("Configurações de voz salvas!");
+  });
+</script>
+
+{% endblock %}

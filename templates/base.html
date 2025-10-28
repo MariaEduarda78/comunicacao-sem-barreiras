@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comunicação Sem Barreiras</title>
+
+  <!-- Bootstrap primeiro -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Seu CSS por último (vence conflitos) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <style>
+    /* ----------- AJUSTE GLOBAL DE ESTILO ----------- */
+    body {
+      background-color: #cce8ff;
+      font-family: 'Nunito Sans', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 20px 0 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-weight: 700;
+      color: #1b3a6e;
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    header .usuario {
+      margin-top: 5px;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    header .logout {
+      display: inline-block;
+      margin-top: 6px;
+      color: #fff;
+      background-color: #007bff;
+      padding: 6px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    header .logout:hover {
+      background-color: #005fc7;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    /* ------------ GRID AJUSTADA (telas principais) ------------ */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      justify-items: center;
+    }
+
+    .tile {
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      padding: 22px;
+      width: 100%;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      color: #1b3a6e;
+      text-decoration: none;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .tile .emoji {
+      font-size: 44px;
+      margin-bottom: 14px;
+    }
+
+    .tile .title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* ------------ BOTÕES GERAIS ------------ */
+    .btn {
+      border-radius: 12px;
+      font-weight: 700;
+      padding: 12px 20px;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #005fc7;
+    }
+
+    .btn-ghost {
+      background-color: #fff3b0;
+      color: #222;
+      border: none;
+    }
+
+    .btn-ghost:hover {
+      background-color: #ffe877;
+    }
+
+    /* ------------ ALERTAS / FLASH ------------ */
+    .flash {
+      text-align: center;
+      padding: 10px;
+      background-color: #fef9c3;
+      border: 1px solid #e0c200;
+      border-radius: 10px;
+      color: #5a4d00;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    /* ------------ FORMULÁRIOS ------------ */
+    input, select, textarea {
+      font-size: 1rem;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+      color: #1b3a6e;
+    }
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Comunicação Sem Barreiras</h1>
+    {% if session.get('usuario_nome') %}
+      <div class="usuario">Olá, {{ session['usuario_nome'] }}</div>
+      <a class="logout" href="{{ url_for('logout') }}">Sair</a>
+    {% endif %}
+  </header>
+
+  <main>
+    <div class="container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</body>
+</html>

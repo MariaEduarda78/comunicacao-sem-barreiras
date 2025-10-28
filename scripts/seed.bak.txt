@@ -1,0 +1,32 @@
+from app import app, db, Usuario, Categoria, Card
+
+with app.app_context():
+db.create_all()
+u = Usuario.query.filter_by(email="demo@exemplo.com
+").first()
+if not u:
+u = Usuario(nome="Demo", email="demo@exemplo.com
+")
+db.session.add(u)
+db.session.commit()
+
+basicas = [("Saudações", "#7c3aed"), ("Necessidades", "#2563eb"), ("Sentimentos", "#059669")]
+exemplos = {
+    "Saudações": [("Oi", "Oi!"), ("Por favor", "Por favor"), ("Obrigado", "Obrigado")],
+    "Necessidades": [("Água", "Quero água"), ("Banheiro", "Preciso ir ao banheiro")],
+    "Sentimentos": [("Feliz", "Estou feliz"), ("Triste", "Estou triste")],
+}
+
+for nome, cor in basicas:
+    cat = Categoria.query.filter_by(usuario_id=u.id, nome=nome).first()
+    if not cat:
+        cat = Categoria(usuario_id=u.id, nome=nome, cor=cor)
+        db.session.add(cat)
+        db.session.commit()
+    if not cat.cards:
+        for rotulo, fala in exemplos.get(nome, []):
+            db.session.add(Card(categoria_id=cat.id, rotulo=rotulo, fala_sugerida=fala))
+        db.session.commit()
+
+
+print("Seed concluído.")

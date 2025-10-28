@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="penguin" aria-hidden="true"></div>
+    <h2>Entrar</h2>
+    <form method="post" class="form">
+      <input class="input" type="text" name="nome" placeholder="Usuário" required>
+      <input class="input" type="email" name="email" placeholder="E-mail" required>
+      <button class="btn btn-primary" type="submit">Acessar</button>
+    </form>
+    <div class="actions" style="margin-top:12px">
+      <button class="btn btn-ghost" type="button" onclick="alert('Em desenvolvimento')">Esqueci minha senha</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

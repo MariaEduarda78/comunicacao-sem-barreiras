@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; margin-bottom:24px;">{{ cat.nome }}</h2>
+
+<!-- LISTA DE CARDS EXISTENTES -->
+<div class="grid" style="margin-bottom:40px;">
+  {% for c in cards %}
+    <div class="tile" style="background-color: {{ c.cor or '#ffffff' }}; cursor:pointer;"
+         onclick="falar('{{ c.fala or c.label }}')">
+      <div class="emoji" style="font-size:2.5rem;">{{ c.emoji or '🧩' }}</div>
+      <div class="title">{{ c.label }}</div>
+      {% if c.fala %}
+        <div style="font-size:0.9rem; color:#333; margin-top:6px;">{{ c.fala }}</div>
+      {% endif %}
+      <form method="post" action="{{ url_for('cards_delete', cat_id=cat.id, card_id=c.id) }}" style="margin-top:10px;">
+        <button class="btn btn-ghost" type="submit">Excluir</button>
+      </form>
+    </div>
+  {% else %}
+    <p style="text-align:center;">Nenhum card cadastrado ainda.</p>
+  {% endfor %}
+</div>
+
+<div style="max-width:600px; margin:20px auto 10px; background:#fff; border-radius:12px; padding:12px;">
+  <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+    <strong>Voz:</strong>
+    <label>Velocidade
+      <input type="range" min="0.6" max="1.4" step="0.1" value="1" oninput="localStorage.setItem('tts_rate', this.value)">
+    </label>
+    <label>Tom
+      <input type="range" min="0.6" max="1.4" step="0.1" value="1" oninput="localStorage.setItem('tts_pitch', this.value)">
+    </label>
+    <label>Volume
+      <input type="range" min="0.2" max="1" step="0.1" value="1" oninput="localStorage.setItem('tts_vol', this.value)">
+    </label>
+  </div>
+</div>
+
+
+<!-- FORMULÁRIO DE NOVO CARD -->
+<div style="max-width:600px; margin:0 auto; background:#fff; padding:20px; border-radius:16px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+  <h4 style="text-align:center; margin-bottom:16px;">Adicionar novo card</h4>
+
+  <form method="post">
+    <label>Título / Palavra</label>
+    <input class="input" type="text" name="label" placeholder="Ex: Quero brincar" required>
+
+    <label>Emoji</label>
+    <input class="input" type="text" name="emoji" placeholder="Ex: 😊">
+
+    <label>Cor do card</label>
+    <input class="input" type="color" name="cor" value="{{ cat.cor or '#cfe7ff' }}">
+
+    <label>Fala (texto para o TTS)</label>
+    <input class="input" type="text" name="fala" placeholder="Texto que será falado">
+
+    <div class="actions" style="display:flex; justify-content:space-between; margin-top:12px;">
+      <a class="btn btn-ghost" href="{{ url_for('cards_home') }}">Voltar</a>
+      <button class="btn btn-primary" type="submit">Salvar Card</button>
+    </div>
+  </form>
+</div>
+
+<!-- SCRIPT DE TTS -->
+<script>
+let ultimaFala = "";
+
+function falar(texto) {
+  if (!window.speechSynthesis) {
+    alert("Seu navegador não suporta voz.");
+    return;
+  }
+  ultimaFala = texto || ultimaFala || "";
+  if (!ultimaFala) return;
+
+  const fala = new SpeechSynthesisUtterance(ultimaFala);
+  fala.lang = "pt-BR";
+  fala.pitch = parseFloat(localStorage.getItem("tts_pitch") || "1");
+  fala.rate  = parseFloat(localStorage.getItem("tts_rate")  || "1");
+  fala.volume= parseFloat(localStorage.getItem("tts_vol")   || "1");
+  speechSynthesis.cancel();
+  speechSynthesis.speak(fala);
+}
+
+function repetir(){
+  falar(ultimaFala);
+}
+</script>
+
+<!-- BARRA FIXA DE AÇÕES RÁPIDAS -->
+<div id="quickbar" style="
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,.15);
+  display:flex;
+  gap:10px;
+  padding:10px 16px;
+  z-index:999;">
+  <button class="btn btn-ghost" onclick="falar('Sim')">✅ Sim</button>
+  <button class="btn btn-ghost" onclick="falar('Não')">⛔ Não</button>
+  <button class="btn btn-ghost" onclick="falar('Me ajuda, por favor')">🆘 Ajuda</button>
+  <button class="btn btn-primary" onclick="repetir()">🔁 Falar de novo</button>
+</div>
+
+{% endblock %}

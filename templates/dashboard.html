@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Cabeçalho do bloco do usuário/instituição -->
+<div class="profile" style="margin: 10px 0 24px 0;">
+  <div class="avatar"></div>
+  <div class="name">INSTITUIÇÃO/USO DOMÉSTICO</div>
+  <div class="handle">@{{ session.get('usuario_nome','usuario')|lower|replace(' ', '') }}</div>
+</div>
+
+<!-- Grade de tiles do dashboard -->
+<div class="grid" style="gap:22px;">
+  <!-- Todos os usuários -->
+  <a class="tile big" href="{{ url_for('usuarios') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">👥</div>
+    <div class="title">TODOS OS USUÁRIOS</div>
+  </a>
+
+  <!-- Cards (porta de entrada de comunicação) -->
+  <a class="tile big" href="{{ url_for('cards_home') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">🧩</div>
+    <div class="title">CARDS</div>
+  </a>
+
+  <!-- Cadastrar criança (se quiser trocar por outro item depois, eu altero) -->
+  <a class="tile big" href="{{ url_for('criancas_view') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">👶</div>
+    <div class="title">CADASTRAR CRIANÇA</div>
+  </a>
+
+  <!-- Configurações da conta (nome/email do usuário logado) -->
+  <a class="tile big" href="{{ url_for('conta') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">⚙️</div>
+    <div class="title">CONFIGURAÇÕES DA CONTA</div>
+  </a>
+
+  <!-- Sobre nós (estático) -->
+  <a class="tile big" href="{{ url_for('sobre') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">ℹ️</div>
+    <div class="title">SOBRE NÓS</div>
+  </a>
+
+  <!-- Configurações gerais (voz, volume, velocidade, etc.) -->
+  <a class="tile big" href="{{ url_for('config_gerais') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">🛠️</div>
+    <div class="title">CONFIGURAÇÕES GERAIS</div>
+  </a>
+
+  <!-- Ajuda (FAQ básico) -->
+  <a class="tile big" href="{{ url_for('ajuda') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">❓</div>
+    <div class="title">AJUDA</div>
+  </a>
+
+  <!-- Sair -->
+  <a class="tile big" href="{{ url_for('logout') }}" style="text-decoration:none; color:inherit;">
+    <div class="emoji">📦</div>
+    <div class="title">SAIR</div>
+  </a>
+</div>
+
+{% endblock %}
